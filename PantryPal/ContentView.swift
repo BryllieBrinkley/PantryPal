@@ -7,20 +7,40 @@
 
 import SwiftUI
 import SwiftData
+import TipKit
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
     
     @State private var item: String = ""
+    
     @FocusState private var isFocused: Bool
     
+    let buttonTip = ButtonTip()
+    
+    func setupTips() {
+        do {
+            try Tips.resetDatastore()
+            Tips.showAllTipsForTesting()
+            try Tips.configure([
+                .displayFrequency(.immediate)
+            ])
+        } catch {
+            print("Error initializing TipKit \(error.localizedDescription)")
+        }
+    }
+    
+    init() {
+        setupTips()
+    }
+    
     func addEssentialFoods() {
-        modelContext.insert(Item(title: "Fruits", isCompleted: false))
-        modelContext.insert(Item(title: "Eggs", isCompleted: true))
-        modelContext.insert(Item(title: "Cheese", isCompleted: .random()))
-        modelContext.insert(Item(title: "Meats", isCompleted: .random()))
-        modelContext.insert(Item(title: "Cereals", isCompleted: .random()))
+      modelContext.insert(Item(title: "Bakery &  Bread", isCompleted: false))
+      modelContext.insert(Item(title: "Meat & Seafood", isCompleted: true))
+      modelContext.insert(Item(title: "Cereals", isCompleted: .random()))
+      modelContext.insert(Item(title: "Pasta & Rice", isCompleted: .random()))
+      modelContext.insert(Item(title: "Cheese & Eggs", isCompleted: .random()))
     }
     
     var body: some View {
@@ -52,15 +72,16 @@ struct ContentView: View {
             }
             .navigationTitle("Grocery List")
             .toolbar {
-                if items.isEmpty {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            addEssentialFoods()
-                        } label: {
-                            Label("Essentials", systemImage: "carrot")
-                        }
-                    }
+              if items.isEmpty {
+                ToolbarItem(placement: .topBarTrailing) {
+                  Button {
+                    addEssentialFoods()
+                  } label: {
+                    Image(systemName: "carrot")
+                  }
+                  .popoverTip(buttonTip)
                 }
+              }
             }
             .overlay {
                 if items.isEmpty {
