@@ -37,10 +37,10 @@ struct ContentView: View {
     
     func addEssentialFoods() {
       modelContext.insert(Item(title: "Bakery &  Bread", isCompleted: false))
-      modelContext.insert(Item(title: "Meat & Seafood", isCompleted: true))
-      modelContext.insert(Item(title: "Cereals", isCompleted: .random()))
-      modelContext.insert(Item(title: "Pasta & Rice", isCompleted: .random()))
-      modelContext.insert(Item(title: "Cheese & Eggs", isCompleted: .random()))
+      modelContext.insert(Item(title: "Meat & Seafood", isCompleted: false))
+      modelContext.insert(Item(title: "Cereals", isCompleted: false))
+      modelContext.insert(Item(title: "Pasta & Rice", isCompleted: false))
+      modelContext.insert(Item(title: "Cheese & Eggs", isCompleted: false))
     }
     
     var body: some View {
