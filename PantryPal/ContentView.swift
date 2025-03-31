@@ -17,6 +17,11 @@ struct ContentView: View {
             List {
                 ForEach(items) { item in
                     Text(item.title)
+                        .font(.title.weight(.light))
+                        .padding(.vertical, 2)
+                        .foregroundStyle(item.isCompleted == false ? Color.primary : Color.accentColor)
+                        .strikethrough(item.isCompleted)
+                        .italic(item.isCompleted)
                 }
             }
             .navigationTitle("Grocery List")
@@ -29,8 +34,27 @@ struct ContentView: View {
     }
 }
 
+#Preview("List with Sample Data") {
+    let sampleData: [Item] = [
+        Item(title: "Fruits", isCompleted: false),
+        Item(title: "Eggs", isCompleted: true),
+        Item(title: "Cheese", isCompleted: .random()),
+        Item(title: "Meats", isCompleted: .random()),
+        Item(title: "Cereals", isCompleted: .random())
+    ]
+    
+    let container = try! ModelContainer(for: Item.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+    
+    for item in sampleData {
+        container.mainContext.insert(item)
+    }
+    
+    return ContentView()
+        .modelContainer(container)
 
-#Preview {
+}
+
+#Preview("Empty List") {
     ContentView()
         .modelContainer(for: Item.self, inMemory: true)
 }
