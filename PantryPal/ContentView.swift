@@ -12,6 +12,14 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
     
+    func addEssentialFoods() {
+        modelContext.insert(Item(title: "Fruits", isCompleted: false))
+        modelContext.insert(Item(title: "Eggs", isCompleted: true))
+        modelContext.insert(Item(title: "Cheese", isCompleted: .random()))
+        modelContext.insert(Item(title: "Meats", isCompleted: .random()))
+        modelContext.insert(Item(title: "Cereals", isCompleted: .random()))
+    }
+    
     var body: some View {
         NavigationStack {
             List {
@@ -22,9 +30,35 @@ struct ContentView: View {
                         .foregroundStyle(item.isCompleted == false ? Color.primary : Color.accentColor)
                         .strikethrough(item.isCompleted)
                         .italic(item.isCompleted)
+                        .swipeActions {
+                            Button(role: .destructive) {
+                                withAnimation {
+                                    modelContext.delete(item)
+                                }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                        .swipeActions(edge: .leading) {
+                            Button("Done", systemImage: item.isCompleted == false ? "checkmark.circle" : "x.circle") {
+                                item.isCompleted.toggle()
+                            }
+                            .tint(item.isCompleted == false ? .green : .accentColor)
+                        }
                 }
             }
             .navigationTitle("Grocery List")
+            .toolbar {
+                if items.isEmpty {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            addEssentialFoods()
+                        } label: {
+                            Label("Essentials", systemImage: "carrot")
+                        }
+                    }
+                }
+            }
             .overlay {
                 if items.isEmpty {
                     ContentUnavailableView("Empty Cart", systemImage: "cart.circle", description: Text("Add some items to the shopping list"))
@@ -51,7 +85,7 @@ struct ContentView: View {
     
     return ContentView()
         .modelContainer(container)
-
+    
 }
 
 #Preview("Empty List") {
